@@ -1,6 +1,6 @@
 # pyrympro
 
-A python library to communitcate with [Read Your Meter Pro](https://rym-pro.com/).
+A python library to communicate with [Read Your Meter Pro](https://rym-pro.com/).
 
 ## Installation
 
@@ -13,15 +13,73 @@ Python 3.7 and above are supported.
 
 ## How to use
 
-```python
-from pyrympro import RymPro
-rym = RymPro()
-# you can also pass in your own session
-rym = RymPro(session)
+### Initialize
 
-# device_id can be anything you choose
-await rym.login("<email>", "<password>", "<device_id>")
-info = await rym.account_info()
-meter_reads = await rym.last_read()
-...
+**With predefined client session**
+
+```python
+import aiohttp
+from pyrympro.rympro import RymPro
+
+session = aiohttp.ClientSession()
+rym = RymPro(session)
 ```
+
+**Let client generate session**
+```python
+from pyrympro.rympro import RymPro
+
+rym = RymPro() 
+```
+
+### Initialize client and login
+```python
+from pyrympro.rympro import RymPro
+
+rym = RymPro() 
+await rym.initialize("<username>", "<password>")
+```
+
+### Get the latest details
+```python
+from pyrympro.rympro import RymPro
+
+rym = RymPro() 
+await rym.initialize("<username>", "<password>")
+
+await rym.update()
+
+print(f"profile: {rym.profile}")
+print(f"meters: {rym.meters}")
+print(f"customer_service: {rym.customer_service}")
+print(f"settings: {rym.settings}")
+```
+
+### Set alerts for leaks in all channels
+```python
+from pyrympro.helpers.enums import MediaTypes, AlertTypes
+from pyrympro.rympro import RymPro
+
+rym = RymPro() 
+await rym.initialize("<username>", "<password>")
+
+await rym.update()
+
+print(f"settings: {rym.settings}")
+
+await rym.set_alert_settings(AlertTypes.LEAK, MediaTypes.ALL, True)
+
+print(f"settings: {rym.settings}")
+```
+
+**Channels**
+
+- None (MediaTypes.NONE)
+- Email (MediaTypes.EMAIL)
+- SMS (MediaTypes.SMS)
+- All (MediaTypes.ALL)
+
+**Alert Types**
+- Daily exception (AlertTypes.DAILY_EXCEPTION)
+- Leak (AlertTypes.LEAK)
+- Consumption identified will away or vacation (AlertTypes.CONSUMPTION_WHILE_AWAY)
