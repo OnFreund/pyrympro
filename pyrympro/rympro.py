@@ -20,11 +20,14 @@ class RymPro:
       self._session = None
       self._created_session = False
 
+  def set_token(self, token):
+    """Use a pre-existing token instead of logging in."""
+    self._init_session()
+    self._access_token = token
+
   async def login(self, email, password, device_id):
     """Login to RYM Pro."""
-    if self._session == None:
-      self._session = aiohttp.ClientSession()
-      self._created_session = True
+    self._init_session()
     headers = {"Content-Type": "application/json"}
     body = {"email": email, "pw": password, "deviceId": device_id}
     try:
@@ -66,6 +69,11 @@ class RymPro:
           raise OperationError(response)
     except (asyncio.TimeoutError, aiohttp.ClientError) as error:
       raise OperationError() from error
+
+  def _init_session(self):
+    if self._session == None:
+      self._session = aiohttp.ClientSession()
+      self._created_session = True
 
   # async def _post(self, endpoint, json_payload=None):
   #   if not self._access_token:
