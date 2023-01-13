@@ -42,6 +42,7 @@ class RymPro:
           raise CannotConnectError(f"code: {error_code}, error: {error}")
         else:
           self._access_token = token
+          return token
     except aiohttp.client_exceptions.ClientConnectorError as e:
       raise CannotConnectError from e
 
