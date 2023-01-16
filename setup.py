@@ -18,7 +18,7 @@ URL = 'https://github.com/OnFreund/pyrympro'
 EMAIL = 'onfreund@gmail.com'
 AUTHOR = 'On Freund'
 REQUIRES_PYTHON = '>=3.7.0'
-VERSION = '0.0.3'
+VERSION = '0.0.4'
 
 REQUIRED = ['aiohttp']
 
