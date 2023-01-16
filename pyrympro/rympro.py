@@ -55,7 +55,8 @@ class RymPro:
 
   async def last_read(self):
     """Get the latest meter reads."""
-    return await self._get(Endpoint.LAST_READ)
+    raw = await self._get(Endpoint.LAST_READ)
+    return { meter["meterCount"]: meter for meter in raw }
 
   async def _get(self, endpoint, params=None):
     if not self._access_token:
@@ -65,6 +66,8 @@ class RymPro:
       async with self._session.get(endpoint.value, headers=headers) as response:
         if response.status == 200:
           return await response.json()
+        elif response.status == 401:
+          raise UnauthorizedError(response)
         else:
           raise OperationError(response)
     except (asyncio.TimeoutError, aiohttp.ClientError) as error:
