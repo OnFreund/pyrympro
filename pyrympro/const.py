@@ -12,3 +12,4 @@ class Endpoint(Enum):
   LOGIN = f"{CONSUMER_URL_OLD}/login"
   ACCOUNT_INFO = f"{CONSUMER_URL_OLD}/me"
   LAST_READ = f"{CONSUMPTION_URL}/last-read"
+  CONSUMPTION_FORECAST = f"{CONSUMPTION_URL}/forecast/{{meter_id}}"

@@ -1,35 +1,36 @@
 """Implementation of a RymPro inteface."""
 import aiohttp
 import asyncio
-
+from typing import Any, Optional
 from .const import Endpoint
 
 class RymPro:
   """A connection to RYM Pro."""
 
-  def __init__(self, session=None):
+  def __init__(self, session: Optional[aiohttp.ClientSession] = None) -> None:
     """Initialize the object."""
     self._created_session = False
     self._session = session
-    self._access_token = None
+    self._access_token: Optional[str] = None
 
-  async def close(self):
+  async def close(self) -> None:
     """Close the connection."""
     if self._created_session and self._session is not None:
       await self._session.close()
       self._session = None
       self._created_session = False
 
-  def set_token(self, token):
+  def set_token(self, token: str) -> None:
     """Use a pre-existing token instead of logging in."""
     self._init_session()
     self._access_token = token
 
-  async def login(self, email, password, device_id):
-    """Login to RYM Pro."""
+  async def login(self, email: str, password: str, device_id: str) -> str:
+    """Login to RYM Pro and return a token."""
     self._init_session()
     headers = {"Content-Type": "application/json"}
     body = {"email": email, "pw": password, "deviceId": device_id}
+    assert self._session
     try:
       async with self._session.post(
         Endpoint.LOGIN.value, headers=headers, json=body
@@ -49,21 +50,26 @@ class RymPro:
     except aiohttp.client_exceptions.ClientConnectorError as e:
       raise CannotConnectError from e
 
-  async def account_info(self):
+  async def account_info(self) -> dict[str, Any]:
     """Get the account information."""
     return await self._get(Endpoint.ACCOUNT_INFO)
 
-  async def last_read(self):
+  async def last_read(self) -> dict[int, dict[str, Any]]:
     """Get the latest meter reads."""
-    raw = await self._get(Endpoint.LAST_READ)
+    raw: list[dict[str, Any]] = await self._get(Endpoint.LAST_READ)
     return { meter["meterCount"]: meter for meter in raw }
 
-  async def _get(self, endpoint, params=None):
+  async def consumption_forecast(self, meter_id: int) -> float:
+    """Get the consumption forecast for this month."""
+    return (await self._get(Endpoint.CONSUMPTION_FORECAST, meter_id=meter_id))["estimatedConsumption"]
+
+  async def _get(self, endpoint: Endpoint, **kwargs: Any) -> Any:
     if not self._access_token:
       raise OperationError("Please login")
     headers = {"Content-Type": "application/json", "x-access-token": self._access_token}
+    assert self._session
     try:
-      async with self._session.get(endpoint.value, headers=headers) as response:
+      async with self._session.get(endpoint.value.format(**kwargs), headers=headers) as response:
         if response.status == 200:
           return await response.json()
         elif response.status == 401:
@@ -73,7 +79,7 @@ class RymPro:
     except (asyncio.TimeoutError, aiohttp.ClientError) as error:
       raise OperationError() from error
 
-  def _init_session(self):
+  def _init_session(self) -> None:
     if self._session == None:
       self._session = aiohttp.ClientSession()
       self._created_session = True
