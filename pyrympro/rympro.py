@@ -65,9 +65,15 @@ class RymPro:
     return (await self._get(Endpoint.CONSUMPTION_FORECAST, meter_id=meter_id))["estimatedConsumption"]
 
   async def daily_consumption(self, meter_id: int) -> float:
-    """Get the consumption forecast for today."""
+    """Get the consumption for today."""
     today = datetime.now().strftime("%Y-%m-%d")
     result = await self._get(Endpoint.DAILY_CONSUMPTION, meter_id=meter_id, start_date=today, end_date=today)
+    return result[0]["cons"]
+
+  async def monthly_consumption(self, meter_id: int) -> float:
+    """Get the consumption this month."""
+    today = datetime.now().strftime("%Y-%m-%d")
+    result = await self._get(Endpoint.MONTHLY_CONSUMPTION, meter_id=meter_id, start_date=today, end_date=today)
     return result[0]["cons"]
 
   async def _get(self, endpoint: Endpoint, **kwargs: Any) -> Any:

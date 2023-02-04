@@ -14,3 +14,4 @@ class Endpoint(Enum):
   LAST_READ = f"{CONSUMPTION_URL}/last-read"
   CONSUMPTION_FORECAST = f"{CONSUMPTION_URL}/forecast/{{meter_id}}"
   DAILY_CONSUMPTION = f"{CONSUMPTION_URL}/daily/lastbillingCycle/{{meter_id}}/{{start_date}}/{{end_date}}"
+  MONTHLY_CONSUMPTION = f"{CONSUMPTION_URL}/monthly/{{meter_id}}/{{start_date}}/{{end_date}}"
