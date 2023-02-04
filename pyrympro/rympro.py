@@ -1,6 +1,7 @@
 """Implementation of a RymPro inteface."""
 import aiohttp
 import asyncio
+from datetime import datetime
 from typing import Any, Optional
 from .const import Endpoint
 
@@ -62,6 +63,12 @@ class RymPro:
   async def consumption_forecast(self, meter_id: int) -> float:
     """Get the consumption forecast for this month."""
     return (await self._get(Endpoint.CONSUMPTION_FORECAST, meter_id=meter_id))["estimatedConsumption"]
+
+  async def daily_consumption(self, meter_id: int) -> float:
+    """Get the consumption forecast for today."""
+    today = datetime.now().strftime("%Y-%m-%d")
+    result = await self._get(Endpoint.DAILY_CONSUMPTION, meter_id=meter_id, start_date=today, end_date=today)
+    return result[0]["cons"]
 
   async def _get(self, endpoint: Endpoint, **kwargs: Any) -> Any:
     if not self._access_token:
