@@ -17,8 +17,8 @@ DESCRIPTION = 'A python library to communitcate with Read Your Meter Pro (https:
 URL = 'https://github.com/OnFreund/pyrympro'
 EMAIL = 'onfreund@gmail.com'
 AUTHOR = 'On Freund'
-REQUIRES_PYTHON = '>=3.7.0'
-VERSION = '0.0.6'
+REQUIRES_PYTHON = '>=3.10.0'
+VERSION = '0.0.7'
 
 REQUIRED = ['aiohttp']
 
