@@ -1,4 +1,4 @@
-"""Implementation of a RymPro inteface."""
+"""Implementation of a RymPro interface."""
 import aiohttp
 import asyncio
 from datetime import datetime
@@ -94,7 +94,7 @@ class RymPro:
 
   def _init_session(self) -> None:
     if self._session == None:
-      self._session = aiohttp.ClientSession()
+      self._session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=False))
       self._created_session = True
 
   # async def _post(self, endpoint, json_payload=None):
