@@ -48,7 +48,7 @@ class RymPro:
         else:
           self._access_token = token
           return token
-    except aiohttp.client_exceptions.ClientConnectorError as e:
+    except (asyncio.TimeoutError, aiohttp.ClientError) as e:
       raise CannotConnectError from e
 
   async def account_info(self) -> dict[str, Any]:
