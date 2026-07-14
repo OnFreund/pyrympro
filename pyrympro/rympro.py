@@ -68,13 +68,16 @@ class RymPro:
     """Get the consumption for today."""
     today = datetime.now().strftime("%Y-%m-%d")
     result = await self._get(Endpoint.DAILY_CONSUMPTION, meter_id=meter_id, start_date=today, end_date=today)
-    return result[0]["cons"]
+    # The API returns an empty list when today's reading hasn't been produced yet
+    # (e.g. shortly after midnight), which means consumption so far today is 0.
+    return result[0]["cons"] if result else 0.0
 
   async def monthly_consumption(self, meter_id: int) -> float:
     """Get the consumption this month."""
     today = datetime.now().strftime("%Y-%m-%d")
     result = await self._get(Endpoint.MONTHLY_CONSUMPTION, meter_id=meter_id, start_date=today, end_date=today)
-    return result[0]["cons"]
+    # Same as daily_consumption: no reading yet for today means 0 consumption so far.
+    return result[0]["cons"] if result else 0.0
 
   async def _get(self, endpoint: Endpoint, **kwargs: Any) -> Any:
     if not self._access_token:
